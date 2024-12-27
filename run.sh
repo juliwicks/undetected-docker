@@ -24,6 +24,8 @@ display_banner() {
     echo -e "${NC}"  # Reset color
 }
 
+display_banner()
+
 # Function to generate a random MAC address
 generate_mac_address() {
     mac="02:$(od -An -N5 -tx1 /dev/urandom | tr ' ' ':' | cut -c2-)"
@@ -44,8 +46,8 @@ generate_fake_os_info() {
     os_name=${os_names[$RANDOM % ${#os_names[@]}]}
     os_version=${os_versions[$RANDOM % ${#os_versions[@]}]}
     os_kernel=${os_kernel_versions[$RANDOM % ${#os_kernel_versions[@]}]}
-    echo -e "NAME=\"$os_name\"\nVERSION=\"$os_version\"\nID=ubuntu\nID_LIKE=debian\nVERSION_ID=20.04\nPRETTY_NAME=\"$os_name $os_version\"" > /etc/os-release
-    echo "Linux version $os_kernel" > /proc/version
+    echo -e "NAME=\"$os_name\"\nVERSION=\"$os_version\"\nID=ubuntu\nID_LIKE=debian\nVERSION_ID=20.04\nPRETTY_NAME=\"$os_name $os_version\"" | sudo tee /etc/os-release > /dev/null
+    echo "Linux version $os_kernel" | sudo tee /proc/version > /dev/null
 }
 
 # Function to generate fake CPU info
@@ -82,7 +84,7 @@ generate_fake_cpu_info() {
     cpu_cores=$(shuf -i 2-16 -n 1)
     cpu_speed=$(shuf -i 2000-5000 -n 1)  # In MHz
 
-    echo -e "model name\t: $cpu_model\nprocessor\t: 0\ncpu MHz\t\t: $cpu_speed\ncpu cores\t: $cpu_cores" > /proc/cpuinfo
+    echo -e "model name\t: $cpu_model\nprocessor\t: 0\ncpu MHz\t\t: $cpu_speed\ncpu cores\t: $cpu_cores" | sudo tee /proc/cpuinfo > /dev/null
 }
 
 # Function to generate fake memory info
@@ -90,7 +92,7 @@ generate_fake_memory_info() {
     total_mem=$(shuf -i 4096-32768 -n 1)  # Total RAM in MB
     free_mem=$(shuf -i 1024-8192 -n 1)    # Free RAM in MB
     swap_mem=$(shuf -i 0-8192 -n 1)       # Swap space in MB
-    echo -e "MemTotal:       $total_mem kB\nMemFree:        $free_mem kB\nSwapTotal:      $swap_mem kB" > /proc/meminfo
+    echo -e "MemTotal:       $total_mem kB\nMemFree:        $free_mem kB\nSwapTotal:      $swap_mem kB" | sudo tee /proc/meminfo > /dev/null
 }
 
 # Function to generate a fake hostname
@@ -102,14 +104,14 @@ generate_fake_hostname() {
     random_last_name=${last_names[$RANDOM % ${#last_names[@]}]}
     random_place=${places[$RANDOM % ${#places[@]}]}
     random_hostname="${random_first_name}-${random_last_name}-${random_place}"
-    hostnamectl set-hostname "$random_hostname"
+    sudo hostnamectl set-hostname "$random_hostname"
     echo "$random_hostname"
 }
 
 # Function to randomize network namespace
 randomize_network_namespace() {
     random_namespace="netns-$(shuf -i 1000-9999 -n 1)"
-    ip link set dev eth0 netns $random_namespace
+    sudo ip link set dev eth0 netns $random_namespace
     echo "$random_namespace"
 }
 
@@ -127,17 +129,17 @@ randomize_timezone_and_locale() {
     proxy_region="US"
 
     if [ "$proxy_region" == "US" ]; then
-        echo "America/New_York" > /etc/timezone
-        locale-gen "en_US.UTF-8"
-        update-locale LANG=en_US.UTF-8
+        echo "America/New_York" | sudo tee /etc/timezone > /dev/null
+        sudo locale-gen "en_US.UTF-8"
+        sudo update-locale LANG=en_US.UTF-8
     elif [ "$proxy_region" == "EU" ]; then
-        echo "Europe/Paris" > /etc/timezone
-        locale-gen "fr_FR.UTF-8"
-        update-locale LANG=fr_FR.UTF-8
+        echo "Europe/Paris" | sudo tee /etc/timezone > /dev/null
+        sudo locale-gen "fr_FR.UTF-8"
+        sudo update-locale LANG=fr_FR.UTF-8
     else
-        echo "Asia/Tokyo" > /etc/timezone
-        locale-gen "ja_JP.UTF-8"
-        update-locale LANG=ja_JP.UTF-8
+        echo "Asia/Tokyo" | sudo tee /etc/timezone > /dev/null
+        sudo locale-gen "ja_JP.UTF-8"
+        sudo update-locale LANG=ja_JP.UTF-8
     fi
 }
 
