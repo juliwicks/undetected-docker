@@ -24,8 +24,6 @@ display_banner() {
     echo -e "${NC}"  # Reset color
 }
 
-display_banner()
-
 # Function to generate a random MAC address
 generate_mac_address() {
     mac="02:$(od -An -N5 -tx1 /dev/urandom | tr ' ' ':' | cut -c2-)"
@@ -178,6 +176,7 @@ set_proxy
 randomize_timezone_and_locale
 
 # Output the results
+display_banner()
 echo -e "\n${SUCCESS}Randomized Docker container data for $docker_name:${NC}"
 echo -e "${INFO}MAC Address: ${mac_address}${NC}"
 echo -e "${INFO}UUID: ${uuid}${NC}"
