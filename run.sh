@@ -1,5 +1,26 @@
 #!/bin/bash
 
+# Function to display the banner line by line in green
+display_banner() {
+    # Each line of the ASCII banner
+    echo -e "\033[0;32m                 _      _            _           _ \033[0m"
+    echo -e "\033[0;32m /\ /\ _ __   __| | ___| |_ ___  ___| |_ ___  __| |\033[0m"
+    echo -e "\033[0;32m/ / \ \ '_ \ / _` |/ _ \ __/ _ \/ __| __/ _ \/ _` |\033[0m"
+    echo -e "\033[0;32m\ \_/ / | | | (_| |  __/ ||  __/ (__| ||  __/ (_| |\033[0m"
+    echo -e "\033[0;32m \___/|_| |_|\__,_|\___|\__\___|\___|\__\___|\__,_|\033[0m"
+    echo -e "\033[0;32m                                                   \033[0m"
+    echo -e "\033[0;32m    ___           _                     _   ___    \033[0m"
+    echo -e "\033[0;32m   /   \___   ___| | _____ _ __  __   _/ | / _ \   \033[0m"
+    echo -e "\033[0;32m  / /\ / _ \ / __| |/ / _ \ '__| \ \ / / || | | |  \033[0m"
+    echo -e "\033[0;32m / /_// (_) | (__|   <  __/ |     \ V /| || |_| |  \033[0m"
+    echo -e "\033[0;32m/___,' \___/ \___|_|\_\___|_|      \_/ |_(_)___/   \033[0m"
+    echo -e "\033[0m"  # Reset color
+}
+
+display_banner
+
+echo -e "\033[0;32mScript is made by Nodebot (Juliwicks) for your better undetected docker\033[0m"
+
 # Function to generate a random MAC address
 generate_mac_address() {
     echo "02:$(od -An -N5 -tx1 /dev/urandom | tr ' ' ':' | cut -c2-)"
@@ -27,10 +48,47 @@ generate_fake_os_info() {
 # Function to generate fake CPU info
 generate_fake_cpu_info() {
     echo "Faking CPU info..."
-    cpu_models=("Intel Core i9-9900K" "AMD Ryzen 9 5900X" "Intel Xeon E5-2680 v4" "ARM Cortex-A53" "Intel Core i7-10700K" "Intel Core i5-9600K" "AMD Ryzen 5 5600X" "Apple M1" "AMD Athlon 3000G" "Qualcomm Snapdragon 888")
+    
+    # List of processor families (Intel, AMD, ARM, Qualcomm, etc.)
+    processor_types=("Intel" "AMD" "ARM" "Qualcomm" "Apple")
+
+    # List of processor models for each type
+    intel_models=("Core i9-9900K" "Core i7-10700K" "Core i5-11600K" "Core i7-9700K" "Core i9-12900K" "Core i5-9600K")
+    amd_models=("Ryzen 9 5900X" "Ryzen 7 5800X" "Ryzen 5 5600X" "Ryzen 9 5950X" "Ryzen 7 3800X" "Ryzen 5 3600")
+    arm_models=("Cortex-A53" "Cortex-A72" "Cortex-A76" "Cortex-A9" "Cortex-A55")
+    qualcomm_models=("Snapdragon 888" "Snapdragon 865" "Snapdragon 845" "Snapdragon 710")
+    apple_models=("M1" "M1 Pro" "M2" "A13 Bionic")
+
+    # Select a random processor family
+    processor_type=${processor_types[$RANDOM % ${#processor_types[@]}]}
+    
+    # Select a random processor model from the appropriate family
+    case $processor_type in
+        "Intel")
+            cpu_model="Intel ${intel_models[$RANDOM % ${#intel_models[@]}]}"
+            ;;
+        "AMD")
+            cpu_model="AMD ${amd_models[$RANDOM % ${#amd_models[@]}]}"
+            ;;
+        "ARM")
+            cpu_model="ARM ${arm_models[$RANDOM % ${#arm_models[@]}]}"
+            ;;
+        "Qualcomm")
+            cpu_model="Qualcomm ${qualcomm_models[$RANDOM % ${#qualcomm_models[@]}]}"
+            ;;
+        "Apple")
+            cpu_model="Apple ${apple_models[$RANDOM % ${#apple_models[@]}]}"
+            ;;
+        *)
+            cpu_model="Unknown Processor"
+            ;;
+    esac
+
+    # Generate random values for CPU speed and cores
     cpu_cores=$(shuf -i 2-16 -n 1)
     cpu_speed=$(shuf -i 2000-5000 -n 1)  # In MHz
-    cpu_model=${cpu_models[$RANDOM % ${#cpu_models[@]}]}
+
+    # Output the generated CPU info (this could be written to /proc/cpuinfo for more realism)
     echo -e "model name\t: $cpu_model\nprocessor\t: 0\ncpu MHz\t\t: $cpu_speed\ncpu cores\t: $cpu_cores" > /proc/cpuinfo
 }
 
